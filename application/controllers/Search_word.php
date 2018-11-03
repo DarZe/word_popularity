@@ -65,10 +65,11 @@ private $CI;
 			$total_count = $github->get_total_count($word,$provider_name);
 			$positive_count = $github->get_positive_count($word,$provider_name);
 			$score = $this->CI->Nysearch_word->get_score($total_count, $positive_count);
+			$score = round($score,2);
 			$database->insert_score($word, $score);
 			
 		} else {
-			$score = $query['score'];		
+			$score = floatval($query['score']);		
 		}
 
 		$arr = array(
