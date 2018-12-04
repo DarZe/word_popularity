@@ -1,11 +1,13 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+
 require_once 'GitHubRequest.php';
 require_once 'DataBase.php';
-class Search_word extends CI_Controller {
-private $CI;
 
-	function __construct(){
+class Search_word extends CI_Controller {
+	private $CI;
+
+	function __construct() {
 		parent::__construct();
  		$this->load->model('Nysearch_word');
  		$this->load->helper('url'); 
@@ -14,13 +16,12 @@ private $CI;
     	$this->CI->load->helper('form');   
 	}
 	
-	public function index(){	
-		
+	public function index() {		
 		$data['provider'] = $this->CI->Nysearch_word->get_provider();
 		$this->load->view('form_search',$data);
 	}
 
-	public function get_word(){
+	public function get_word() {
 		$word = $this->CI->input->get('term');
 		$provider_name = $this->CI->input->get('provider');
 
@@ -41,26 +42,29 @@ private $CI;
 			header("HTTP/1.1 404 Not found");
 			$status = 'error';
 			$message['term'] = 'Provider cannot be empty!';
-		}else{
+		} else {
 			$api = $github->get_api($provider_name);
-			if(empty($api)) {
+			if (empty($api)) {
 				header("HTTP/1.1 404 Not found");
 				$status = 'error';
 				$message['provider'] = 'Unsupported provider!';
 			}	
 		}
 		
-		if($status == 'error') {
+		if ($status == 'error') {
 			$arr = array(
 				'message' => $message
             );
+            
     		echo json_encode($arr);
+
     		return;
 		}
 
 		$query = $database->get_word($word);
 		$score;
-		if(empty($query['words'])) {
+		
+		if (empty($query['words'])) {
 
 			$total_count = $github->get_total_count($word,$provider_name);
 			$positive_count = $github->get_positive_count($word,$provider_name);
@@ -76,8 +80,7 @@ private $CI;
             'term' => $word,
             'score' => $score
         );
+
     	echo json_encode($arr);
 	}
-	
-
 }
